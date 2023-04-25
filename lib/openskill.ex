@@ -47,6 +47,7 @@ defmodule Openskill do
     output = options.model.rate(new_rating_groups, options)
 
     if options.tau > 0 and options.prevent_sigma_increase do
+      # this currently break for teams
       output =
         for [{old_rating, old_sigma}] <- rating_groups,
             [{output_rating, output_sigma}] <- output do
