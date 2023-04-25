@@ -30,7 +30,8 @@ defmodule Openskill do
     defaults = [
       weights: Util.default_weights(rating_groups),
       ranks: Util.default_ranks(rating_groups),
-      model: Openskill.PlackettLuce
+      model: Openskill.PlackettLuce,
+      tau: @env.tau
     ]
 
     options = Keyword.merge(defaults, options) |> Enum.into(%{})

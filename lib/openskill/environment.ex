@@ -5,9 +5,11 @@ defmodule Openskill.Environment do
   @beta @sigma / 2
   @epsilon 0.0001
 
+  @tau 0.0
   defstruct mu: @mu,
             sigma: @sigma,
             beta: @beta,
             epsilon: @epsilon,
-            z: @z
+            z: @z,
+            tau: @tau
 end
