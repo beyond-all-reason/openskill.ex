@@ -66,20 +66,20 @@ defmodule OpenskillTest do
     end
 
     test "rate accepts and runs a placket-luce model with tau and prevent_sigma_increase" do
-      a1 = Openskill.rating(16.672, 6.217)
+      a1 = Openskill.rating(6.672, 0.0001)
       b1 = Openskill.rating(29.182, 4.782)
-      c1 = Openskill.rating(27.174, 4.922)
-      d1 = Openskill.rating()
 
-      [[a2], [b2], [c2], [d2]] =
-        Openskill.rate([[a1], [b1], [c1], [d1]], tau: 1.0, prevent_sigma_increase: true)
+      [[a2], [b2]] = Openskill.rate([[a1], [b1]], tau: 0.01, prevent_sigma_increase: true)
 
-      assert [
-               [{18.921013484503142, 6.269087419132719}],
-               [{29.647253389227924, 4.84779919898679}],
-               [{26.918030202069595, 4.960094460338512}],
-               [{20.346001701305088, 7.920708623545842}]
-             ] == [[a2], [b2], [c2], [d2]]
+      {_a1_mu, a1_sigma} = a1
+      {_a2_mu, a2_sigma} = a2
+
+      assert a2_sigma <= a1_sigma
+
+      assert [[{6.672012533190158, 0.0001}], [{26.316243774876106, 4.7540633621019}]] == [
+               [a2],
+               [b2]
+             ]
     end
 
     test "rate accepts and runs a placket-luce model by default for teams" do
@@ -123,8 +123,8 @@ defmodule OpenskillTest do
       [[a2, b2], [c2, d2]] =
         Openskill.rate([[a1, b1], [c1, d1]], tau: 0.01, prevent_sigma_increase: true)
 
-      {a1_mu, a1_sigma} = a1
-      {a2_mu, a2_sigma} = a2
+      {_a1_mu, a1_sigma} = a1
+      {_a2_mu, a2_sigma} = a2
 
       assert a2_sigma <= a1_sigma
 

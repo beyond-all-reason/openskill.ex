@@ -48,13 +48,13 @@ defmodule Openskill do
 
     if options.tau > 0 and options.prevent_sigma_increase do
       # this currently break for teams
-      output =
-        for [{old_rating, old_sigma}] <- rating_groups,
-            [{output_rating, output_sigma}] <- output do
-          [{output_rating, min(output_sigma, old_sigma)}]
-        end
+      Enum.zip_with(rating_groups, output, fn old_group, new_group ->
+        [{old_rating, old_sigma}] = old_group
+        [{output_rating, output_sigma}] = new_group
+        [{output_rating, min(output_sigma, old_sigma)}]
+      end)
+    else
+      output
     end
-
-    output
   end
 end
