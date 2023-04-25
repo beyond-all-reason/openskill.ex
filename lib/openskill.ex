@@ -47,7 +47,6 @@ defmodule Openskill do
     output = options.model.rate(new_rating_groups, options)
 
     if options.tau > 0 and options.prevent_sigma_increase do
-      # this currently break for teams
       Enum.zip(rating_groups, output)
       |> Enum.map(fn {old_team, new_team} ->
         Enum.zip(old_team, new_team)
