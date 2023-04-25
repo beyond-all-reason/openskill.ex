@@ -35,6 +35,11 @@ defmodule Openskill do
     ]
 
     options = Keyword.merge(defaults, options) |> Enum.into(%{})
+
+    rating_groups =
+      for [{rating, sigma}] <- rating_groups,
+          do: [{rating, Math.sqrt(sigma ** 2 + options.tau ** 2)}]
+
     options.model.rate(rating_groups, options)
   end
 end
