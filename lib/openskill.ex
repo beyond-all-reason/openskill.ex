@@ -31,15 +31,26 @@ defmodule Openskill do
       weights: Util.default_weights(rating_groups),
       ranks: Util.default_ranks(rating_groups),
       model: Openskill.PlackettLuce,
-      tau: @env.tau
+      tau: @env.tau,
+      prevent_sigma_increase: @env.prevent_sigma_increase
     ]
 
     options = Keyword.merge(defaults, options) |> Enum.into(%{})
 
-    rating_groups =
+    new_rating_groups =
       for [{rating, sigma}] <- rating_groups,
           do: [{rating, Math.sqrt(sigma ** 2 + options.tau ** 2)}]
 
-    options.model.rate(rating_groups, options)
+    output = options.model.rate(new_rating_groups, options)
+
+    if options.tau > 0 and options.prevent_sigma_increase do
+      output =
+        for [{old_rating, old_sigma}] <- rating_groups,
+            [{output_rating, output_sigma}] <- output do
+          [{output_rating, min(output_sigma, old_sigma)}]
+        end
+    end
+
+    output
   end
 end
