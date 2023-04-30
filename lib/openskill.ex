@@ -30,10 +30,32 @@ defmodule Openskill do
     defaults = [
       weights: Util.default_weights(rating_groups),
       ranks: Util.default_ranks(rating_groups),
-      model: Openskill.PlackettLuce
+      model: Openskill.PlackettLuce,
+      tau: @env.tau,
+      prevent_sigma_increase: @env.prevent_sigma_increase
     ]
 
     options = Keyword.merge(defaults, options) |> Enum.into(%{})
-    options.model.rate(rating_groups, options)
+
+    new_rating_groups =
+      Enum.map(rating_groups, fn team ->
+        Enum.map(team, fn {mu, sigma} ->
+          {mu, Math.sqrt(sigma ** 2 + options.tau ** 2)}
+        end)
+      end)
+
+    output = options.model.rate(new_rating_groups, options)
+
+    if options.tau > 0 and options.prevent_sigma_increase do
+      Enum.zip(rating_groups, output)
+      |> Enum.map(fn {old_team, new_team} ->
+        Enum.zip(old_team, new_team)
+        |> Enum.map(fn {{_old_mu, old_sigma}, {new_mu, new_sigma}} ->
+          {new_mu, min(old_sigma, new_sigma)}
+        end)
+      end)
+    else
+      output
+    end
   end
 end
