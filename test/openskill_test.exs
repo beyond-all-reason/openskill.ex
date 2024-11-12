@@ -49,6 +49,93 @@ defmodule OpenskillTest do
              ] == [[a2], [b2], [c2], [d2]]
     end
 
+    test "rate accepts and runs a placket-luce model with tau" do
+      a1 = Openskill.rating(29.182, 4.782)
+      b1 = Openskill.rating(27.174, 4.922)
+      c1 = Openskill.rating(16.672, 6.217)
+      d1 = Openskill.rating()
+
+      [[a2], [b2], [c2], [d2]] = Openskill.rate([[a1], [b1], [c1], [d1]], tau: 0.01)
+
+      assert [
+               [{30.20997558824299, 4.764909330988368}],
+               [{27.64461002009721, 4.882799245921361}],
+               [{17.403587237635527, 6.100731158882956}],
+               [{19.21478808745494, 7.854267281042293}]
+             ] == [[a2], [b2], [c2], [d2]]
+    end
+
+    test "rate accepts and runs a placket-luce model with tau and prevent_sigma_increase" do
+      a1 = Openskill.rating(6.672, 0.0001)
+      b1 = Openskill.rating(29.182, 4.782)
+
+      [[a2], [b2]] = Openskill.rate([[a1], [b1]], tau: 0.01, prevent_sigma_increase: true)
+
+      {_a1_mu, a1_sigma} = a1
+      {_a2_mu, a2_sigma} = a2
+
+      assert a2_sigma <= a1_sigma
+
+      assert [[{6.672012533190158, 0.0001}], [{26.316243774876106, 4.7540633621019}]] == [
+               [a2],
+               [b2]
+             ]
+    end
+
+    test "rate accepts and runs a placket-luce model by default for teams" do
+      a1 = Openskill.rating(29.182, 4.782)
+      b1 = Openskill.rating(27.174, 4.922)
+      c1 = Openskill.rating(16.672, 6.217)
+      d1 = Openskill.rating()
+
+      [[a2, b2], [c2, d2]] = Openskill.rate([[a1, b1], [c1, d1]])
+
+      assert [
+               [{29.607218266047376, 4.754597315295896}],
+               [{27.624480490655575, 4.89211428863373}],
+               [{15.953288649990139, 6.125357588584119}],
+               [{23.708690706816785, 8.111298027437888}]
+             ] == [[a2], [b2], [c2], [d2]]
+    end
+
+    test "rate accepts and runs a placket-luce model by default for teams with tau" do
+      a1 = Openskill.rating(29.182, 4.782)
+      b1 = Openskill.rating(27.174, 4.922)
+      c1 = Openskill.rating(16.672, 6.217)
+      d1 = Openskill.rating()
+
+      [[a2, b2], [c2, d2]] = Openskill.rate([[a1, b1], [c1, d1]], tau: 0.01)
+
+      assert [
+               [{29.60722003260825, 4.754607604502581}],
+               [{27.624482251695827, 4.892124276331747}],
+               [{15.953286947567106, 6.1253654293947335}],
+               [{23.708689129525133, 8.111303923213725}]
+             ] == [[a2], [b2], [c2], [d2]]
+    end
+
+    test "rate accepts and runs a placket-luce model by default for teams with tau and prevent_sigma_increase" do
+      a1 = Openskill.rating(9.182, 0.0001)
+      b1 = Openskill.rating(27.174, 4.922)
+      c1 = Openskill.rating(16.672, 6.217)
+      d1 = Openskill.rating()
+
+      [[a2, b2], [c2, d2]] =
+        Openskill.rate([[a1, b1], [c1, d1]], tau: 0.01, prevent_sigma_increase: true)
+
+      {_a1_mu, a1_sigma} = a1
+      {_a2_mu, a2_sigma} = a2
+
+      assert a2_sigma <= a1_sigma
+
+      assert [
+               [{9.182004653636957, 0.0001}],
+               [{28.301285923165363, 4.889318394468611}],
+               [{14.87349383521136, 6.076727029758966}],
+               [{21.768626152890867, 7.992333183226455}]
+             ] == [[a2], [b2], [c2], [d2]]
+    end
+
     test "accepts bradley-terry with full pairings" do
       a1 = Openskill.rating(29.182, 4.782)
       b1 = Openskill.rating(27.174, 4.922)
