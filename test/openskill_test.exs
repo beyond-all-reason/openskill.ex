@@ -188,30 +188,39 @@ defmodule OpenskillTest do
 
       result = Openskill.rate_with_ids([[a1], [b1], [c1], [d1]])
 
-      assert match?([
-        [{"a1", {_, _}}],
-        [{"b1", {_, _}}],
-        [{"c1", {_, _}}],
-        [{"d1", {_, _}}]
-      ], result)
+      assert match?(
+               [
+                 [{"a1", {_, _}}],
+                 [{"b1", {_, _}}],
+                 [{"c1", {_, _}}],
+                 [{"d1", {_, _}}]
+               ],
+               result
+             )
 
       # Ensure the format of the result is correct in a 2v2 situation too
       result = Openskill.rate_with_ids([[a1, b1], [c1, d1]])
 
-      assert match?([
-        [{"a1", {_, _}}, {"b1", {_, _}}],
-        [{"c1", {_, _}}, {"d1", {_, _}}]
-      ], result)
+      assert match?(
+               [
+                 [{"a1", {_, _}}, {"b1", {_, _}}],
+                 [{"c1", {_, _}}, {"d1", {_, _}}]
+               ],
+               result
+             )
 
       # Now ensure it adheres to the :as_map option
       result = Openskill.rate_with_ids([[a1, b1], [c1, d1]], as_map: true)
 
-      assert match?(%{
-        "a1" => {_, _},
-        "b1" => {_, _},
-        "c1" => {_, _},
-        "d1" => {_, _}
-      }, result)
+      assert match?(
+               %{
+                 "a1" => {_, _},
+                 "b1" => {_, _},
+                 "c1" => {_, _},
+                 "d1" => {_, _}
+               },
+               result
+             )
     end
   end
 end
