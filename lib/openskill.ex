@@ -117,28 +117,30 @@ defmodule Openskill do
   """
   @spec rate_with_ids([[mu_sigma_pair_with_id()]], list()) :: [[mu_sigma_pair_with_id()]]
   def rate_with_ids(rating_groups, options \\ []) do
-    rating_groups_without_ids = rating_groups
+    rating_groups_without_ids =
+      rating_groups
       |> Enum.map(fn ratings_with_ids ->
         ratings_with_ids
-          |> Enum.map(fn {_, rating} ->
-            rating
-          end)
+        |> Enum.map(fn {_, rating} ->
+          rating
+        end)
       end)
 
-    result = rate(rating_groups_without_ids, options)
+    result =
+      rate(rating_groups_without_ids, options)
       |> Enum.zip(rating_groups)
       |> Enum.map(fn {updated_values, original_values} ->
         original_values
-          |> Enum.zip(updated_values)
-          |> Enum.map(fn {{id, _}, updated_value} ->
-            {id, updated_value}
-          end)
+        |> Enum.zip(updated_values)
+        |> Enum.map(fn {{id, _}, updated_value} ->
+          {id, updated_value}
+        end)
       end)
 
     if options[:as_map] do
       result
-        |> List.flatten
-        |> Map.new
+      |> List.flatten()
+      |> Map.new()
     else
       result
     end
