@@ -161,6 +161,10 @@ defmodule Openskill do
         |> Enum.with_index()
         |> Enum.filter(fn {_, q} -> i != q end)
         |> Enum.map(fn {{mu_b, sigma_sq_b, _team, _i}, _} ->
+          # mu_a and mu_b is the sum of mu of players on that team
+          # phi_major(0) will equal 50% win probability
+          # So the larger team a mu is compared to team b, the higher chance of team a winning
+          # If the uncertainty is increased for either team, then this will make it closer to 50% win probability
           phi_major((mu_a - mu_b) / :math.sqrt(n * betasq + sigma_sq_a + sigma_sq_b))
         end)
         |> Enum.sum()
@@ -172,6 +176,7 @@ defmodule Openskill do
   # Gives the probability that a statistic is less than Z
   # Assumes normal distribution with mean 0 and s.d. of 1
   # https://hexdocs.pm/statistics/Statistics.Distributions.Normal.html#cdf/0-examples
+  # if the input is 0 then the result will be 50%
   def phi_major(input) do
     Statistics.Distributions.Normal.cdf().(input)
   end
