@@ -146,7 +146,21 @@ defmodule Openskill do
     end
   end
 
-  @spec predict_win([[{float(), float()}]]) :: [float()]
+  @doc """
+  Predict the win probability for each team.
+
+  ## Examples
+
+      iex> teams = [
+      ...>   [{25, 8.333}, {30, 6.666}],
+      ...>   [{27, 7.0}, {28, 5.5}]
+      ...> ]
+      iex> Openskill.predict_win(teams)
+      [0.5, 0.5]
+
+  In this example, since the sum of mu of each team is equal, the expectation is 50% win probability for both teams
+  """
+  @spec predict_win([[mu_sigma_pair()]]) :: [float()]
   def predict_win(teams) do
     team_ratings = Openskill.Util.team_rating(teams)
     n = length(teams)

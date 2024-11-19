@@ -261,6 +261,8 @@ defmodule OpenskillTest do
 
       result = Openskill.predict_win(teams)
       assert result == [0.202122560771339, 0.797877439228661]
+      # These results match python docs:
+      # https://github.com/vivekjoshy/openskill.py/blob/main/docs/source/manual.rst#predicting-winners
     end
   end
 end
