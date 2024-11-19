@@ -145,4 +145,53 @@ defmodule Openskill do
       result
     end
   end
+
+  @doc """
+  Predict the win probability for each team.
+
+  ## Examples
+
+      iex> teams = [
+      ...>   [{25, 8.333}, {30, 6.666}],
+      ...>   [{27, 7.0}, {28, 5.5}]
+      ...> ]
+      iex> Openskill.predict_win(teams)
+      [0.5, 0.5]
+
+  In this example, since the sum of mu of each team is equal, the expectation is 50% win probability for both teams
+  """
+  @spec predict_win([[mu_sigma_pair()]]) :: [float()]
+  def predict_win(teams) do
+    team_ratings = Openskill.Util.team_rating(teams)
+    n = length(teams)
+    denom = n * (n - 1) / 2
+    betasq = @env.beta * @env.beta
+
+    team_ratings
+    |> Enum.with_index()
+    |> Enum.map(fn {{mu_a, sigma_sq_a, _team, _i}, i} ->
+      sum =
+        team_ratings
+        |> Enum.with_index()
+        |> Enum.filter(fn {_, q} -> i != q end)
+        |> Enum.map(fn {{mu_b, sigma_sq_b, _team, _i}, _} ->
+          # mu_a and mu_b is the sum of mu of players on that team
+          # phi_major(0) will equal 50% win probability
+          # So the larger team a mu is compared to team b, the higher chance of team a winning
+          # If the uncertainty is increased for either team, then this will make it closer to 50% win probability
+          phi_major((mu_a - mu_b) / :math.sqrt(n * betasq + sigma_sq_a + sigma_sq_b))
+        end)
+        |> Enum.sum()
+
+      sum / denom
+    end)
+  end
+
+  # Gives the probability that a statistic is less than Z
+  # Assumes normal distribution with mean 0 and s.d. of 1
+  # https://hexdocs.pm/statistics/Statistics.Distributions.Normal.html#cdf/0-examples
+  # if the input is 0 then the result will be 50%
+  def phi_major(input) do
+    Statistics.Distributions.Normal.cdf().(input)
+  end
 end

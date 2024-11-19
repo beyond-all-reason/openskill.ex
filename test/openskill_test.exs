@@ -39,7 +39,7 @@ defmodule OpenskillTest do
       c1 = Openskill.rating(16.672, 6.217)
       d1 = Openskill.rating()
 
-      [[a2], [b2], [c2], [d2]] = Openskill.rate([[a1], [b1], [c1], [d1]])
+      [[a2], [b2], [c2], [d2]] = Openskill.rate([[a1], [b1], [c1], [d1]], tau: 0)
 
       assert [
                [{30.209971908310553, 4.764898977359521}],
@@ -88,7 +88,7 @@ defmodule OpenskillTest do
       c1 = Openskill.rating(16.672, 6.217)
       d1 = Openskill.rating()
 
-      [[a2, b2], [c2, d2]] = Openskill.rate([[a1, b1], [c1, d1]])
+      [[a2, b2], [c2, d2]] = Openskill.rate([[a1, b1], [c1, d1]], tau: 0)
 
       assert [
                [{29.607218266047376, 4.754597315295896}],
@@ -145,7 +145,8 @@ defmodule OpenskillTest do
       [[a2], [b2], [c2], [d2]] =
         Openskill.rate(
           [[a1], [b1], [c1], [d1]],
-          model: Openskill.BradleyTerryFull
+          model: Openskill.BradleyTerryFull,
+          tau: 0
         )
 
       assert [
@@ -165,7 +166,8 @@ defmodule OpenskillTest do
       [[a2], [b2], [c2], [d2]] =
         Openskill.rate(
           [[a1], [b1], [c1], [d1]],
-          model: Openskill.ThurstoneMostellerPart
+          model: Openskill.ThurstoneMostellerPart,
+          tau: 0
         )
 
       assert [
@@ -221,6 +223,46 @@ defmodule OpenskillTest do
                },
                result
              )
+    end
+  end
+
+  describe "predictwin" do
+    test "predictwin works" do
+      teams = [
+        [{25, 8.333}, {30, 6.666}],
+        [{27, 7.0}, {28, 5.5}]
+      ]
+
+      result = Openskill.predict_win(teams)
+      assert result == [0.5000000005, 0.5000000005]
+
+      teams = [
+        [{25, 1}, {30, 6.666}],
+        [{27, 7.0}, {28, 5.5}]
+      ]
+
+      result = Openskill.predict_win(teams)
+      assert result == [0.5000000005, 0.5000000005]
+
+      teams = [
+        [{25, 8.333}, {30, 6.666}],
+        [{27, 1}, {28, 5.5}]
+      ]
+
+      result = Openskill.predict_win(teams)
+      assert result == [0.5000000005, 0.5000000005]
+    end
+
+    test "predictwin works compared with python" do
+      teams = [
+        [{25, 25 / 3}],
+        [{33.564, 1.123}]
+      ]
+
+      result = Openskill.predict_win(teams)
+      assert result == [0.202122560771339, 0.797877439228661]
+      # These results match python docs:
+      # https://github.com/vivekjoshy/openskill.py/blob/main/docs/source/manual.rst#predicting-winners
     end
   end
 end
