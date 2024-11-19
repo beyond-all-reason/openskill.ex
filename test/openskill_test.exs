@@ -233,8 +233,34 @@ defmodule OpenskillTest do
         [{27, 7.0}, {28, 5.5}]
       ]
 
-      Openskill.predict_win(teams)
-      [0.7310585786300049, 0.2689414213699951]
+      result = Openskill.predict_win(teams)
+      assert result == [0.5000000005, 0.5000000005]
+
+      teams = [
+        [{25, 1}, {30, 6.666}],
+        [{27, 7.0}, {28, 5.5}]
+      ]
+
+      result = Openskill.predict_win(teams)
+      assert result == [0.5000000005, 0.5000000005]
+
+      teams = [
+        [{25, 8.333}, {30, 6.666}],
+        [{27, 1}, {28, 5.5}]
+      ]
+
+      result = Openskill.predict_win(teams)
+      assert result == [0.5000000005, 0.5000000005]
+    end
+
+    test "predictwin works compared with python" do
+      teams = [
+        [{25, 25 / 3}],
+        [{33.564, 1.123}]
+      ]
+
+      result = Openskill.predict_win(teams)
+      assert result == [0.202122560771339, 0.797877439228661]
     end
   end
 end
