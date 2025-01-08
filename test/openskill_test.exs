@@ -264,5 +264,46 @@ defmodule OpenskillTest do
       # These results match python docs:
       # https://github.com/vivekjoshy/openskill.py/blob/main/docs/source/manual.rst#predicting-winners
     end
+
+    test "same team mu means equal chance of winning" do
+      # It doesn't matter the standard deviation of teams so long as team mu is equal
+      teams = [
+        [{50, 1}, {0, 6.666}],
+        [{25, 1}, {25, 5.5}]
+      ]
+
+      result = Openskill.predict_win(teams)
+      assert result == [0.5000000005, 0.5000000005]
+
+      # Increasing the mu of one player should increase their odds of winning
+      # Let's increase the skill of the second player on first team
+      teams = [
+        [{50, 1}, {1, 6.666}],
+        [{25, 1}, {25, 5.5}]
+      ]
+
+      result = Openskill.predict_win(teams)
+      assert result == [0.5377401553734663, 0.4622598446265337]
+
+      # Increasing uncertainty of either team will move the result closer to 50%
+      # Let's increase uncertainty of first player in first team
+      teams = [
+        [{50, 8}, {1, 6.666}],
+        [{25, 1}, {25, 5.5}]
+      ]
+
+      result = Openskill.predict_win(teams)
+      assert result == [0.5301795848706835, 0.4698204151293165]
+
+      # Increasing uncertainty of either team will move the result closer to 50%
+      # Let's increase uncertainty of first player in second team and reverting the previous uncertainty change
+      teams = [
+        [{50, 1}, {1, 6.666}],
+        [{25, 8}, {25, 5.5}]
+      ]
+
+      result = Openskill.predict_win(teams)
+      assert result == [0.5301795848706835, 0.4698204151293165]
+    end
   end
 end
