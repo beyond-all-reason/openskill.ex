@@ -305,5 +305,37 @@ defmodule OpenskillTest do
       result = Openskill.predict_win(teams)
       assert result == [0.5301795848706835, 0.4698204151293165]
     end
+
+    test "swapping people of same mu and different sigma has no effect on win predict" do
+      teams = [
+        [{50, 1}, {26, 6.666}],
+        [{50, 5}, {24, 5.5}]
+      ]
+
+      result = Openskill.predict_win(teams)
+      assert result == [0.5682313940082009, 0.4317686059917991]
+
+      # Let's swap the two players with same skill and different uncertainties
+      teams = [
+        [{50, 5}, {26, 6.666}],
+        [{50, 1}, {24, 5.5}]
+      ]
+
+      result = Openskill.predict_win(teams)
+      # The win prediction is identical
+      assert result == [0.5682313940082009, 0.4317686059917991]
+
+      # This means that in this formula
+      # phi_major((mu_a - mu_b) / :math.sqrt(n * betasq + sigma_sq_a + sigma_sq_b))
+      # The denominator can't be changed by shuffling players
+      # Since sigma_sq_a + sigma_sq_b
+      # Is just the sum of sigma squared for everyone in the match (no matter what team)
+      # This also means when solving for win predict 50%, we simply want to solve for the numerator:
+      # mu_a - mu_b = 0
+      # because phi_major(0) = 50%
+
+      # There's a little bit of rounding error but phi_major(0) should equal 50%
+      assert assert_in_delta(Openskill.phi_major(0), 0.5, 0.00000001)
+    end
   end
 end
