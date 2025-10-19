@@ -12,7 +12,7 @@ defmodule Openskill.PlackettLuce do
         team_sigmasq + @betasq
       end)
       |> Enum.sum()
-      |> Math.sqrt()
+      |> :math.sqrt()
 
     sum_q =
       team_ratings
@@ -20,7 +20,7 @@ defmodule Openskill.PlackettLuce do
         team_ratings
         |> Enum.filter(fn {_, _, _, teami_rank} -> teami_rank >= teamq_rank end)
         |> Enum.map(fn {teami_mu, _, _, _} ->
-          Math.exp(teami_mu / c)
+          :math.exp(teami_mu / c)
         end)
         |> Enum.sum()
       end)
@@ -41,7 +41,7 @@ defmodule Openskill.PlackettLuce do
 
     team_ratings
     |> Enum.map(fn {teami_mu, teami_sigmasq, teami, teami_rank} ->
-      tmp1 = Math.exp(teami_mu / c)
+      tmp1 = :math.exp(teami_mu / c)
 
       {omega_set, delta_set} =
         team_ratings
@@ -60,7 +60,7 @@ defmodule Openskill.PlackettLuce do
         end)
         |> Enum.unzip()
 
-      gamma = Math.sqrt(teami_sigmasq) / c
+      gamma = :math.sqrt(teami_sigmasq) / c
       omegai = Enum.sum(omega_set) * teami_sigmasq / c
       deltai = gamma * Enum.sum(delta_set) * teami_sigmasq / c / c
 
@@ -69,7 +69,7 @@ defmodule Openskill.PlackettLuce do
 
         {
           muij + sigmaijsq / teami_sigmasq * omegai,
-          sigmaij * Math.sqrt(max(1 - sigmaijsq / teami_sigmasq * deltai, @env.epsilon))
+          sigmaij * :math.sqrt(max(1 - sigmaijsq / teami_sigmasq * deltai, @env.epsilon))
         }
       end
     end)

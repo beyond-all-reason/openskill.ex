@@ -16,10 +16,10 @@ defmodule Openskill.ThurstoneMostellerPart do
         teami_adjacent
         |> Enum.filter(fn {_, _, _, rankq} -> ranki != rankq end)
         |> Enum.reduce({0, 0}, fn {teamq_mu, teamq_sigmasq, _, rankq}, {omega, delta} ->
-          ciq = Math.sqrt(teami_sigmasq + teamq_sigmasq + @twobetasq)
+          ciq = :math.sqrt(teami_sigmasq + teamq_sigmasq + @twobetasq)
           tmp = (teami_mu - teamq_mu) / ciq
           sigsq_to_ciq = teami_sigmasq / ciq
-          gamma = Math.sqrt(teami_sigmasq) / ciq
+          gamma = :math.sqrt(teami_sigmasq) / ciq
 
           cond do
             rankq > ranki ->
@@ -54,7 +54,7 @@ defmodule Openskill.ThurstoneMostellerPart do
 
         {
           muij + sigmaijsq / teami_sigmasq * omegai,
-          sigmaij * Math.sqrt(max(1 - sigmaijsq / teami_sigmasq * deltai, @env.epsilon))
+          sigmaij * :math.sqrt(max(1 - sigmaijsq / teami_sigmasq * deltai, @env.epsilon))
         }
       end
     end)

@@ -12,10 +12,10 @@ defmodule Openskill.BradleyTerryFull do
         team_ratings
         |> Enum.filter(fn {_, _, _, rankq} -> ranki != rankq end)
         |> Enum.reduce({0, 0}, fn {teamq_mu, teamq_sigmasq, _, rankq}, {omega, delta} ->
-          ciq = Math.sqrt(teami_sigmasq + teamq_sigmasq + @twobetasq)
-          piq = 1 / (1 + Math.exp((teamq_mu - teami_mu) / ciq))
+          ciq = :math.sqrt(teami_sigmasq + teamq_sigmasq + @twobetasq)
+          piq = 1 / (1 + :math.exp((teamq_mu - teami_mu) / ciq))
           sigsq_to_ciq = teami_sigmasq / ciq
-          gamma = Math.sqrt(teami_sigmasq) / ciq
+          gamma = :math.sqrt(teami_sigmasq) / ciq
 
           {
             omega + sigsq_to_ciq * (Util.score(rankq, ranki) - piq),
@@ -28,7 +28,7 @@ defmodule Openskill.BradleyTerryFull do
 
         {
           muij + sigmaijsq / teami_sigmasq * omegai,
-          sigmaij * Math.sqrt(max(1 - sigmaijsq / teami_sigmasq * deltai, @env.epsilon))
+          sigmaij * :math.sqrt(max(1 - sigmaijsq / teami_sigmasq * deltai, @env.epsilon))
         }
       end
     end)
