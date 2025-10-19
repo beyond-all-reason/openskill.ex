@@ -62,7 +62,7 @@ defmodule Openskill do
     new_rating_groups =
       Enum.map(rating_groups, fn team ->
         Enum.map(team, fn {mu, sigma} ->
-          {mu, Math.sqrt(sigma ** 2 + options.tau ** 2)}
+          {mu, :math.sqrt(sigma ** 2 + options.tau ** 2)}
         end)
       end)
 
